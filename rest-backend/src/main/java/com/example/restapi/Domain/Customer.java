@@ -1,23 +1,32 @@
 package com.example.restapi.Domain;
 
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 
 @Entity
-@Table(name = "customer")
 public class Customer {
-    private @Id @GeneratedValue Long id;
+    private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
     private String first_name;
     private String second_name;
     private String email;
     private String gender;
     private int age;
 
-    @OneToMany(mappedBy="customer")
-    private Set<Order> orders;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "customer", fetch = FetchType.LAZY)
+    private List<Orders> orders;
+
+    public void setOrders(List<Orders> orders) {
+        this.orders = orders;
+    }
+
+    @JsonManagedReference
+    public List<Orders> getOrders() {
+        return orders;
+    }
 
     public Customer() {}
 
@@ -56,10 +65,6 @@ public class Customer {
         this.age = age;
     }
 
-    public void setOrders(Set<Order> orders) {
-        this.orders = orders;
-    }
-
     public String getFirst_name() {return first_name;}
 
     public Long getId() {return id;}
@@ -81,10 +86,6 @@ public class Customer {
 
     public int getAge() {
         return age;
-    }
-
-    public Set<Order> getOrders() {
-        return orders;
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.example.restapi.Service;
 
 
 import com.example.restapi.Assembler.OrderModelAssembler;
+import com.example.restapi.Controller.OrderController;
 import com.example.restapi.Domain.Order;
 import com.example.restapi.Exceptions.OrderNotFoundException;
 import com.example.restapi.Repository.OrderRepository;
@@ -30,13 +31,11 @@ public class OrderService {
     public CollectionModel<EntityModel<Order>> all(){
         List<EntityModel<Order>> orders = this.repository.findAll()
                 .stream().map(this.assembler::toModel).toList();
-
-        return CollectionModel.of(orders,linkTo(methodOn(OrderService.class).all()).withSelfRel());
+        return CollectionModel.of(orders,linkTo(methodOn(OrderController.class).all()).withSelfRel());
     }
 
     public EntityModel<Order> one(Long id){
         Order order =  this.repository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
-
         return this.assembler.toModel(order);
     }
 

@@ -1,21 +1,14 @@
 package com.example.restapi.Controller;
 
-import java.util.List;
-
-import com.example.restapi.Assembler.CustomerModelAssembler;
 import com.example.restapi.Domain.Customer;
-import com.example.restapi.Exceptions.CustomerNotFoundException;
-import com.example.restapi.Repository.CustomerRepository;
 import com.example.restapi.Service.CustomerService;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import java.util.List;
+
 
 @RestController
 public class CustomerController {
@@ -53,6 +46,12 @@ public class CustomerController {
     @ResponseStatus(HttpStatus.OK)
     public void deleteCustomer(@PathVariable Long id) {
         this.service.deleteCustomer(id);
+    }
+
+    @PostMapping("/customers/{id}/orders")
+    @ResponseStatus(HttpStatus.OK)
+    public void placeOrder(@PathVariable Long id, @RequestBody List<Long> orders) {
+        this.service.placeOrder(id,orders);
     }
 
 }

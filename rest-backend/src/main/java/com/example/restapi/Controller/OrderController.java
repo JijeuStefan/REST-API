@@ -1,78 +1,48 @@
 package com.example.restapi.Controller;
 
 
-import com.example.restapi.Assembler.OrderModelAssembler;
-import com.example.restapi.Domain.Orders;
-import com.example.restapi.Exceptions.OrderNotFoundException;
-import com.example.restapi.Repository.OrderRepository;
+import com.example.restapi.Domain.Order;
+import com.example.restapi.Service.OrderService;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.IanaLinkRelations;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 public class OrderController {
-    private final OrderRepository repository;
+    private final OrderService service;
 
-    private final OrderModelAssembler assembler;
-
-    public OrderController(OrderRepository repository, OrderModelAssembler assembler) {
-        this.repository = repository;
-        this.assembler = assembler;
+    public OrderController(OrderService service) {
+        this.service = service;
     }
 
     @GetMapping("/orders")
-    public CollectionModel<EntityModel<Orders>> all(){
-        List<EntityModel<Orders>> orders = this.repository.findAll()
-                .stream().map(this.assembler::toModel).toList();
-
-        return CollectionModel.of(orders,linkTo(methodOn(OrderController.class).all()).withSelfRel());
+    @ResponseStatus(HttpStatus.OK)
+    public CollectionModel<EntityModel<Order>> all(){
+        return this.service.all();
     }
 
     @GetMapping("/orders/{id}")
-    public EntityModel<Orders> one(@PathVariable Long id){
-        Orders order =  this.repository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
-
-        return this.assembler.toModel(order);
+    @ResponseStatus(HttpStatus.OK)
+    public EntityModel<Order> one(@PathVariable Long id){
+        return this.service.one(id);
     }
 
     @PostMapping("/orders")
-    public ResponseEntity<?> newOrder(@RequestBody Orders order) {
-        EntityModel<Orders> entityModel = this.assembler.toModel(this.repository.save(order));
-
-        return ResponseEntity
-                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
-                .body(entityModel);
+    @ResponseStatus(HttpStatus.CREATED)
+    public EntityModel<Order> newOrder(@RequestBody Order order) {
+        return this.service.newOrder(order);
     }
 
     @PutMapping("/orders/{id}")
-    public ResponseEntity<?> replaceOrder(@RequestBody Orders new_order, @PathVariable Long id) {
-        Orders updated_order =  this.repository.findById(id).
-                map(order -> {
-                    order.setOrder_date(new_order.getOrder_date());
-                    order.setOrder_total(new_order.getOrder_total());
-                    order.setOrder_status(new_order.getOrder_status());
-                    return this.repository.save(order);
-                }).orElseGet(()->{new_order.setId(id);
-                    return this.repository.save(new_order);
-                });
-        EntityModel<Orders> entityModel =  this.assembler.toModel(updated_order);
-
-        return ResponseEntity
-                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
-                .body(entityModel);
+    @ResponseStatus(HttpStatus.OK)
+    public EntityModel<Order> replaceOrder(@RequestBody Order new_order, @PathVariable Long id) {
+        return this.service.replaceOrder(new_order,id);
     }
 
     @DeleteMapping ("/orders/{id}")
-    public ResponseEntity<?> deleteOrder(@PathVariable Long id) {
-        repository.deleteById(id);
-
-        return ResponseEntity.noContent().build();
+    public void deleteOrder(@PathVariable Long id) {
+        this.service.deleteOrder(id);
     }
 }

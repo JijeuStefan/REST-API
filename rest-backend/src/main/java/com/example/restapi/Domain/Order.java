@@ -4,10 +4,10 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import org.hibernate.annotations.Cascade;
 
 @Entity
-public class Orders {
+@Table(name = "ORDERS")
+public class Order {
     private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
 
     private String order_date;
@@ -16,7 +16,7 @@ public class Orders {
 
     private String order_status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
@@ -29,9 +29,9 @@ public class Orders {
         this.customer = customer;
     }
 
-    public Orders(){};
+    public Order(){};
 
-    public Orders(String order_date, Double order_total, String order_status){
+    public Order(String order_date, Double order_total, String order_status){
         this.order_date = order_date;
         this.order_total = order_total;
         this.order_status = order_status;
@@ -72,7 +72,7 @@ public class Orders {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Orders order)) return false;
+        if (!(o instanceof Order order)) return false;
         return Objects.equals(id, order.id) && Objects.equals(order_date, order.order_date) && Objects.equals(order_total, order.order_total) && Objects.equals(order_status, order.order_status) && Objects.equals(customer, order.customer);
     }
 

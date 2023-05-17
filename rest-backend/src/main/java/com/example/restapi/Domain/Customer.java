@@ -8,7 +8,9 @@ import jakarta.persistence.*;
 
 
 @Entity
+@Table(name = "CUSTOMER")
 public class Customer {
+    @Column(name = "customer_id")
     private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
     private String first_name;
     private String second_name;
@@ -16,15 +18,15 @@ public class Customer {
     private String gender;
     private int age;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "customer", fetch = FetchType.LAZY)
-    private List<Orders> orders;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "customer")
+    private List<Order> orders;
 
-    public void setOrders(List<Orders> orders) {
+    public void setOrders(List<Order> orders) {
         this.orders = orders;
     }
 
     @JsonManagedReference
-    public List<Orders> getOrders() {
+    public List<Order> getOrders() {
         return orders;
     }
 

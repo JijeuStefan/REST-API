@@ -6,9 +6,11 @@ import com.example.restapi.Assembler.CustomerModelAssembler;
 import com.example.restapi.Domain.Customer;
 import com.example.restapi.Exceptions.CustomerNotFoundException;
 import com.example.restapi.Repository.CustomerRepository;
+import com.example.restapi.Service.CustomerService;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,63 +19,40 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 public class CustomerController {
-    private final CustomerRepository repository;
+    private final CustomerService service;
 
-    private final CustomerModelAssembler assembler;
-
-    public CustomerController(CustomerRepository repository, CustomerModelAssembler assembler) {
-        this.repository = repository;
-        this.assembler = assembler;
+    public CustomerController(CustomerService service) {
+        this.service = service;
     }
 
     @GetMapping("/customers")
+    @ResponseStatus(HttpStatus.OK)
     public CollectionModel<EntityModel<Customer>> all(){
-        List<EntityModel<Customer>> customers = this.repository.findAll()
-                .stream().map(this.assembler::toModel).toList();
-
-        return CollectionModel.of(customers,linkTo(methodOn(CustomerController.class).all()).withSelfRel());
+        return this.service.all();
     }
 
     @GetMapping("/customers/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public EntityModel<Customer> one(@PathVariable Long id){
-        Customer customer =  this.repository.findById(id).orElseThrow(() -> new CustomerNotFoundException(id));
-
-        return this.assembler.toModel(customer);
+        return this.service.one(id);
     }
 
     @PostMapping("/customers")
-    public ResponseEntity<?> newCustomer(@RequestBody Customer customer) {
-        EntityModel<Customer> entityModel = this.assembler.toModel(this.repository.save(customer));
-
-        return ResponseEntity
-                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
-                .body(entityModel);
+    @ResponseStatus(HttpStatus.CREATED)
+    public EntityModel<Customer> newCustomer(@RequestBody Customer customer) {
+        return this.service.newCustomer(customer);
     }
 
     @PutMapping("/customers/{id}")
-    public ResponseEntity<?> replaceCustomer(@RequestBody Customer new_customer, @PathVariable Long id) {
-        Customer updated_customer =  this.repository.findById(id).
-                map(customer -> {
-                    customer.setName(new_customer.getName());
-                    customer.setEmail(new_customer.getEmail());
-                    customer.setGender(new_customer.getGender());
-                    customer.setAge(new_customer.getAge());
-                    return this.repository.save(customer);
-                }).orElseGet(()->{new_customer.setId(id);
-                    return this.repository.save(new_customer);
-                });
-        EntityModel<Customer> entityModel =  this.assembler.toModel(updated_customer);
-
-        return ResponseEntity
-                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
-                .body(entityModel);
+    @ResponseStatus(HttpStatus.OK)
+    public EntityModel<Customer> replaceCustomer(@RequestBody Customer new_customer, @PathVariable Long id) {
+        return this.service.replaceCustomer(new_customer,id);
     }
 
     @DeleteMapping ("/customers/{id}")
-    public ResponseEntity<?> deleteCustomer(@PathVariable Long id) {
-        repository.deleteById(id);
-
-        return ResponseEntity.noContent().build();
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteCustomer(@PathVariable Long id) {
+        this.service.deleteCustomer(id);
     }
 
 }

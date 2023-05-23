@@ -100,8 +100,8 @@ public class CustomerService {
 
                 Order order = orderOptional.get();
                 order.setCustomer(customer);
-                this.orderRepository.save(order);
 
+                this.orderRepository.save(order);
             }
         }
     }

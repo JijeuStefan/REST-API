@@ -9,6 +9,8 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 public class OrderController {
@@ -49,7 +51,14 @@ public class OrderController {
     }
 
     @PutMapping("orders/{id}/customers")
+    @ResponseStatus(HttpStatus.OK)
     public void setCustomer(@PathVariable Long id, @RequestBody Customer customer) {
         this.service.setCustomer(id,customer);
+    }
+
+    @GetMapping("orders/filter/{price}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<EntityModel<Order>> filter_total(@PathVariable float price){
+        return this.service.filter_total(price);
     }
 }

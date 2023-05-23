@@ -87,4 +87,10 @@ public class OrderService {
 
         this.repository.save(order);
     }
+
+    public List<EntityModel<Order>> filter_total(float price) {
+
+        return this.repository.findAll()
+                .stream().filter(order -> order.getOrder_total() > price).map(this.assembler::toModel).toList();
+    }
 }

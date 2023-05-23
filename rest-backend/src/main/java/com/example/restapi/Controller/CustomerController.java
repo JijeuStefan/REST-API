@@ -12,6 +12,7 @@ import java.util.List;
 
 
 @RestController
+@RequestMapping("/customers")
 public class CustomerController {
     private final CustomerService service;
 
@@ -19,37 +20,37 @@ public class CustomerController {
         this.service = service;
     }
 
-    @GetMapping("/customers")
+    @GetMapping({"","/"})
     @ResponseStatus(HttpStatus.OK)
     public CollectionModel<EntityModel<Customer>> all(){
         return this.service.all();
     }
 
-    @GetMapping("/customers/{id}")
+    @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public EntityModel<Customer> one(@PathVariable Long id){
         return this.service.one(id);
     }
 
-    @PostMapping("/customers")
+    @PostMapping({"","/"})
     @ResponseStatus(HttpStatus.CREATED)
     public EntityModel<Customer> newCustomer(@RequestBody Customer customer) {
         return this.service.newCustomer(customer);
     }
 
-    @PutMapping("/customers/{id}")
+    @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public EntityModel<Customer> replaceCustomer(@RequestBody Customer new_customer, @PathVariable Long id) {
         return this.service.replaceCustomer(new_customer,id);
     }
 
-    @DeleteMapping ("/customers/{id}")
+    @DeleteMapping ("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteCustomer(@PathVariable Long id) {
         this.service.deleteCustomer(id);
     }
 
-    @PostMapping("/customers/{id}/orders")
+    @PostMapping("/{id}/orders")
     @ResponseStatus(HttpStatus.OK)
     public void placeOrder(@PathVariable Long id, @RequestBody List<Order> orders) {
         this.service.placeOrder(id,orders);

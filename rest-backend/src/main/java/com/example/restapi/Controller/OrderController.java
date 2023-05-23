@@ -1,7 +1,6 @@
 package com.example.restapi.Controller;
 
 
-import com.example.restapi.Domain.Customer;
 import com.example.restapi.Domain.Order;
 import com.example.restapi.Service.OrderService;
 import org.springframework.hateoas.CollectionModel;
@@ -13,6 +12,7 @@ import java.util.List;
 
 
 @RestController
+@RequestMapping("/orders")
 public class OrderController {
     private final OrderService service;
 
@@ -20,40 +20,44 @@ public class OrderController {
         this.service = service;
     }
 
-    @GetMapping("/orders")
+    @GetMapping({"","/"})
     @ResponseStatus(HttpStatus.OK)
     public CollectionModel<EntityModel<Order>> all(){
         return this.service.all();
     }
 
-    @GetMapping("/orders/{id}")
+    @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public EntityModel<Order> one(@PathVariable Long id){
         return this.service.one(id);
     }
 
-    @PostMapping("/orders")
+    @PostMapping({"","/"})
     @ResponseStatus(HttpStatus.CREATED)
     public EntityModel<Order> newOrder(@RequestBody Order order) {
         return this.service.newOrder(order);
     }
 
-    @PutMapping("/orders/{id}")
+//    @PostMapping("/orders/{id}/products")
+//    @ResponseStatus(HttpStatus.ACCEPTED)
+//    public void order_products(@PathVariable Long id,@RequestBody)
+
+    @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public EntityModel<Order> replaceOrder(@RequestBody Order new_order, @PathVariable Long id) {
         return this.service.replaceOrder(new_order,id);
     }
 
-    @DeleteMapping ("/orders/{id}")
+    @DeleteMapping ("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteOrder(@PathVariable Long id) {
         this.service.deleteOrder(id);
     }
 
-    @PutMapping("orders/{id}/customers")
+    @PutMapping("/{id}/customers")
     @ResponseStatus(HttpStatus.OK)
-    public void setCustomer(@PathVariable Long id, @RequestBody Customer customer) {
-        this.service.setCustomer(id,customer);
+    public void setCustomer(@PathVariable Long id, @RequestBody Long customer_id) {
+        this.service.setCustomer(id,customer_id);
     }
 
     @GetMapping("orders/filter/{price}")

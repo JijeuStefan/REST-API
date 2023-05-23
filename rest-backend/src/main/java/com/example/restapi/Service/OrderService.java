@@ -72,15 +72,15 @@ public class OrderService {
         repository.deleteById(id);
     }
 
-    public void setCustomer(Long id, Customer new_customer) {
+    public void setCustomer(Long id, Long customer_id) {
         Optional<Order> orderOptional = this.repository.findById(id);
-        Optional<Customer> customerOptional = this.customerRepository.findById(new_customer.getId());
+        Optional<Customer> customerOptional = this.customerRepository.findById(customer_id);
 
         if (orderOptional.isEmpty())
             throw new OrderNotFoundException(id);
 
         if (customerOptional.isEmpty())
-            throw new CustomerNotFoundException(new_customer.getId());
+            throw new CustomerNotFoundException(customer_id);
 
 
         Order order = orderOptional.get();

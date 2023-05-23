@@ -18,13 +18,13 @@ public class Customer {
     private int age;
 
     @OneToMany(mappedBy = "customer")
+    @JsonManagedReference
     private List<Order> orders;
 
     public void setOrders(List<Order> orders) {
         this.orders = orders;
     }
 
-    @JsonManagedReference
     public List<Order> getOrders() {
         return orders;
     }
@@ -87,29 +87,5 @@ public class Customer {
 
     public int getAge() {
         return age;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Customer customer)) return false;
-        return age == customer.age && id.equals(customer.id) && first_name.equals(customer.first_name) && second_name.equals(customer.second_name) && email.equals(customer.email) && gender.equals(customer.gender);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, first_name, second_name, email, gender, age);
-    }
-
-    @Override
-    public String toString() {
-        return "Customer{" +
-                "id=" + id +
-                ", first_name='" + first_name + '\'' +
-                ", second_name='" + second_name + '\'' +
-                ", email='" + email + '\'' +
-                ", phone='" + gender + '\'' +
-                ", age=" + age +
-                '}';
     }
 }

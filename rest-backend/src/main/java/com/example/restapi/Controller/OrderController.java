@@ -58,7 +58,7 @@ public class OrderController {
 
     @GetMapping("orders/filter/{price}")
     @ResponseStatus(HttpStatus.OK)
-    public List<EntityModel<Order>> filter_total(@PathVariable float price){
+    public List<EntityModel<Order>> filter_total(@PathVariable Double price){
         return this.service.filter_total(price);
     }
 }

@@ -1,5 +1,6 @@
 package com.example.restapi.Domain;
 
+import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -17,16 +18,27 @@ public class Order {
     private String order_status;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @JsonBackReference
+    @OneToMany(mappedBy = "order")
+    List<OrderProduct> order_products;
+
     public Customer getCustomer() {
         return customer;
     }
 
     public void setCustomer(Customer customer) {
         this.customer = customer;
+    }
+
+    public List<OrderProduct> getOrder_products() {
+        return order_products;
+    }
+
+    public void setOrder_products(List<OrderProduct> order_products) {
+        this.order_products = order_products;
     }
 
     public Order(){};
@@ -67,28 +79,5 @@ public class Order {
 
     public String getOrder_status() {
         return order_status;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Order order)) return false;
-        return Objects.equals(id, order.id) && Objects.equals(order_date, order.order_date) && Objects.equals(order_total, order.order_total) && Objects.equals(order_status, order.order_status) && Objects.equals(customer, order.customer);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, order_date, order_total, order_status, customer);
-    }
-
-    @Override
-    public String toString() {
-        return "Order{" +
-                "id=" + id +
-                ", order_date='" + order_date + '\'' +
-                ", order_total=" + order_total +
-                ", order_status='" + order_status + '\'' +
-                ", customer=" + customer +
-                '}';
     }
 }

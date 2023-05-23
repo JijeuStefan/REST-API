@@ -75,6 +75,8 @@ public class CustomerService {
     }
 
     public void deleteCustomer(Long id) {
+        if (this.repository.findById(id).isEmpty())
+            throw new CustomerNotFoundException(id);
         repository.deleteById(id);
     }
 

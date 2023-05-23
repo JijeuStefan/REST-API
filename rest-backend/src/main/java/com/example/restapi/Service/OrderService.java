@@ -67,6 +67,8 @@ public class OrderService {
     }
 
     public void deleteOrder(Long id) {
+        if (this.repository.findById(id).isEmpty())
+            throw new OrderNotFoundException(id);
         repository.deleteById(id);
     }
 
@@ -88,8 +90,7 @@ public class OrderService {
         this.repository.save(order);
     }
 
-    public List<EntityModel<Order>> filter_total(float price) {
-
+    public List<EntityModel<Order>> filter_total(Double price) {
         return this.repository.findAll()
                 .stream().filter(order -> order.getOrder_total() > price).map(this.assembler::toModel).toList();
     }

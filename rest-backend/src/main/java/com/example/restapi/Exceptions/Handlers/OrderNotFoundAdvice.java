@@ -1,5 +1,6 @@
-package com.example.restapi.Exceptions;
+package com.example.restapi.Exceptions.Handlers;
 
+import com.example.restapi.Exceptions.OrderNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;

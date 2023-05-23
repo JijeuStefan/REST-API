@@ -3,8 +3,11 @@ package com.example.restapi.Service;
 
 import com.example.restapi.Assembler.OrderModelAssembler;
 import com.example.restapi.Controller.OrderController;
+import com.example.restapi.Domain.Customer;
 import com.example.restapi.Domain.Order;
+import com.example.restapi.Exceptions.CustomerNotFoundException;
 import com.example.restapi.Exceptions.OrderNotFoundException;
+import com.example.restapi.Repository.CustomerRepository;
 import com.example.restapi.Repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
@@ -12,6 +15,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -20,11 +24,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class OrderService {
     private final OrderRepository repository;
 
+    private final CustomerRepository customerRepository;
     private final OrderModelAssembler assembler;
 
     @Autowired
-    public OrderService(OrderRepository repository, OrderModelAssembler assembler) {
+    public OrderService(OrderRepository repository, CustomerRepository customerRepository,OrderModelAssembler assembler) {
         this.repository = repository;
+        this.customerRepository = customerRepository;
         this.assembler = assembler;
     }
 
@@ -62,5 +68,23 @@ public class OrderService {
 
     public void deleteOrder(Long id) {
         repository.deleteById(id);
+    }
+
+    public void setCustomer(Long id, Customer new_customer) {
+        Optional<Order> orderOptional = this.repository.findById(id);
+        Optional<Customer> customerOptional = this.customerRepository.findById(new_customer.getId());
+
+        if (orderOptional.isEmpty())
+            throw new OrderNotFoundException(id);
+
+        if (customerOptional.isEmpty())
+            throw new CustomerNotFoundException(new_customer.getId());
+
+
+        Order order = orderOptional.get();
+        Customer customer = customerOptional.get();
+        order.setCustomer(customer);
+
+        this.repository.save(order);
     }
 }

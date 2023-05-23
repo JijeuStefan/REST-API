@@ -16,7 +16,7 @@ public class Order {
 
     private String order_status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
 

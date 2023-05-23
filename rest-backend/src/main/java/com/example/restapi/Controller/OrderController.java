@@ -1,6 +1,7 @@
 package com.example.restapi.Controller;
 
 
+import com.example.restapi.Domain.Customer;
 import com.example.restapi.Domain.Order;
 import com.example.restapi.Service.OrderService;
 import org.springframework.hateoas.CollectionModel;
@@ -45,5 +46,10 @@ public class OrderController {
     @ResponseStatus(HttpStatus.OK)
     public void deleteOrder(@PathVariable Long id) {
         this.service.deleteOrder(id);
+    }
+
+    @PutMapping("orders/{id}/customers")
+    public void setCustomer(@PathVariable Long id, @RequestBody Customer customer) {
+        this.service.setCustomer(id,customer);
     }
 }

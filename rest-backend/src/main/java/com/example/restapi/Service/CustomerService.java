@@ -39,14 +39,14 @@ public class CustomerService {
         this.assembler = assembler;
     }
 
-    public CollectionModel<EntityModel<Customer>> all(){
-         List<EntityModel<Customer>> list = this.repository.findAll()
+    public CollectionModel<EntityModel<Customer>> all() {
+        List<EntityModel<Customer>> list = this.repository.findAll()
                 .stream().map(this.assembler::toModel).toList();
-        return CollectionModel.of(list,linkTo(methodOn(CustomerController.class).all()).withSelfRel());
+        return CollectionModel.of(list, linkTo(methodOn(CustomerController.class).all()).withSelfRel());
     }
 
-    public EntityModel<Customer> one(Long id){
-        Customer customer =  this.repository.findById(id).orElseThrow(() -> new CustomerNotFoundException(id));
+    public EntityModel<Customer> one(Long id) {
+        Customer customer = this.repository.findById(id).orElseThrow(() -> new CustomerNotFoundException(id));
         return this.assembler.toModel(customer);
     }
 
@@ -55,7 +55,7 @@ public class CustomerService {
     }
 
     public EntityModel<Customer> replaceCustomer(Customer new_customer, Long id) {
-        Customer updated_customer =  this.repository.findById(id).
+        Customer updated_customer = this.repository.findById(id).
                 map(customer -> {
                     if (new_customer.getName() != null)
                         customer.setName(new_customer.getName());
@@ -78,21 +78,31 @@ public class CustomerService {
         repository.deleteById(id);
     }
 
-    public void placeOrder(@PathVariable Long id, @RequestBody List<Long> orders) {
-        Optional<Customer> optionalCustomer = this.repository.findById(id);
+    public void placeOrder(@PathVariable Long id, @RequestBody List<Order> new_orders) {
+        Optional<Customer> customerOptional = this.repository.findById(id);
 
-        if (optionalCustomer.isPresent()) {
-            Customer customer = optionalCustomer.get();
-            for (Long order_id : orders)
-            {
-                Optional<Order> optionalOrder = this.orderRepository.findById(order_id);
-                if (optionalOrder.isPresent())
-                {
-                    Order order = optionalOrder.get();
-                    order.setCustomer(customer);
+        if (customerOptional.isEmpty())
+            throw new CustomerNotFoundException(id);
 
-                }else throw new OrderNotFoundException(order_id);
+        Customer customer = customerOptional.get();
+
+        for (Order new_order : new_orders) {
+
+            if (new_order.getId() == null) {
+                new_order.setCustomer(customer);
+                this.orderRepository.save(new_order);
+            } else {
+
+                Optional<Order> orderOptional = this.orderRepository.findById(new_order.getId());
+
+                if (orderOptional.isEmpty())
+                    throw new OrderNotFoundException(new_order.getId());
+
+                Order order = orderOptional.get();
+                order.setCustomer(customer);
+                this.orderRepository.save(order);
+
             }
-        }else throw new CustomerNotFoundException(id);
+        }
     }
 }

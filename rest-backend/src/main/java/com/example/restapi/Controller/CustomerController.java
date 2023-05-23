@@ -1,6 +1,7 @@
 package com.example.restapi.Controller;
 
 import com.example.restapi.Domain.Customer;
+import com.example.restapi.Domain.Order;
 import com.example.restapi.Service.CustomerService;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -50,7 +51,7 @@ public class CustomerController {
 
     @PostMapping("/customers/{id}/orders")
     @ResponseStatus(HttpStatus.OK)
-    public void placeOrder(@PathVariable Long id, @RequestBody List<Long> orders) {
+    public void placeOrder(@PathVariable Long id, @RequestBody List<Order> orders) {
         this.service.placeOrder(id,orders);
     }
 

@@ -8,7 +8,7 @@ import jakarta.persistence.*;
 
 
 @Entity
-@Table(name = "customer")
+@Table(name = "CUSTOMER")
 public class Customer {
     private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
     private String first_name;
@@ -17,7 +17,7 @@ public class Customer {
     private String gender;
     private int age;
 
-    @OneToMany(mappedBy = "customer",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "customer")
     private List<Order> orders;
 
     public void setOrders(List<Order> orders) {
